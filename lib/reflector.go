@@ -1,15 +1,14 @@
-package main
+package lib
 
 import (
 	"fmt"
-	"k8s-informer/lib"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/fields"
 	"k8s.io/client-go/tools/cache"
 )
 
-func main() {
-	client := lib.InitClient()
+func reflector(){
+	client := InitClient()
 	//因为没有gvk 所以需要用coreV1()
 	podListWatch := cache.NewListWatchFromClient(client.CoreV1().RESTClient(), "pods",
 		"default", fields.Everything())
@@ -17,7 +16,7 @@ func main() {
 	df:=cache.NewDeltaFIFOWithOptions(
 		cache.DeltaFIFOOptions{
 			KeyFunction: cache.MetaNamespaceKeyFunc,
-		    KnownObjects: store,//存进indexer,是个threadsafemap
+			KnownObjects: store,//存进indexer,是个threadsafemap
 		})
 	rf:=cache.NewReflector(podListWatch,&v1.Pod{},df,0)
 
